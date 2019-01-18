@@ -3,6 +3,7 @@
         <body id="page-top" class="index">
 
             <?php 
+                include("includes/connexion.inc.php");
                 include("includes/haut.inc.php");
                 if(isset($_GET['id'])){
                     $modif = $_GET['id'];
@@ -25,7 +26,6 @@
                                 <div class="form-group">
                                     <textarea id="message" name="message" class="form-control" placeholder="Message"><?php 
                                         if(isset($_GET['id'])){
-                                            include("includes/connexion.inc.php");
                                             $query="SELECT * FROM messages WHERE id=$modif ";
                                             $stmt=$pdo->query($query);
                                             while($data=$stmt->fetch()){
@@ -44,13 +44,15 @@
                     </div>
                     <div class="row">
                         <?php 
-                            include("includes/connexion.inc.php");
+                            //Combien de message seront afficher
+                            $result_per_page=5;
                             $query="SELECT * FROM messages";
                             $stmt=$pdo->query($query);
+                            $number_of_results = $stmt->rowCount();/*
+                                Vielle méthode d'affichage sans trie
 
                             while($data=$stmt->fetch()){  
                         ?>
-                            
                                 <blockquote><?php echo $data['contenu']; ?></blockquote>
                                 <a href='index.php?id=<?php echo $data['id']; ?>'>
                                     <button name='d' type='submit' class='btn btn-secondary'>Modifier</button>
@@ -62,9 +64,50 @@
                                     <span id="vote<?php echo $data['id']?>" >J'aime <?php echo "(".$data['jaime'].")"; ?>
                                 </a><br>
                               
-                        <?php  echo gmdate("Y-m-d H:i:s", $data['date']);?><br><br><?php
+                        <?php  echo gmdate("Y-m-d H:i:s",$data['date'] ); ?><br><br><?php
+                            }*/
+                            // determine le nombre de message disponible
+                            $nombre_de_page = ceil($number_of_results/$result_per_page);
+
+                            //Determine sur quel page le visiteur est 
+                            if(!isset($_GET['page'])){
+                                $page=1;
+                            }else{
+                                $page = $_GET['page'];
+                            }
+                            
+                            // Calcule à partir de quand il faut afficher le message
+                            $premier_message_de_la_page = ($page-1)*$result_per_page;
+                            // Trie les message
+                            $query='SELECT * FROM messages LIMIT ' . $premier_message_de_la_page . ',' .  $result_per_page;
+                            $stmt=$pdo->query($query);
+                            $number_result = $stmt->rowCount();
+                            while($data=$stmt->fetch()){  
+                                ?>
+                                    
+                                        <blockquote><?php echo $data['contenu']; ?></blockquote>
+                                        <a href='index.php?id=<?php echo $data['id']; ?>'>
+                                            <button name='d' type='submit' class='btn btn-secondary'>Modifier</button>
+                                        </a> 
+                                        <a href=' <?php echo "includes\supprimer.php?id=".$data['id'];?>'> 
+                                            <button name='dd' type='submit' class='btn btn-secondary'>supression</button>
+                                        </a>
+                                        <a href='#' data-value='<?php echo $data['jaime']; ?>' class='btn-secondary btn jaime' id='<?php echo $data['id'];?>'>
+                                            <span id="vote<?php echo $data['id']?>" >J'aime <?php echo "(".$data['jaime'].")"; ?>
+                                        </a><br>
+                                      
+                                <?php  echo gmdate("Y-m-d H:i:s",$data['date'] ); ?><br><br><?php
+                                    }
+                            //Compteur de page?>
+                            <div style="width:100%;text-align:center">
+                            <?php
+                            
+                            for ($page=1;$page<=$nombre_de_page;$page++)
+                            {
+                                echo'<a style="font-size:18px" href="index.php?page='.$page.'">' .$page. '</a>';
                             }
                         ?> 
+                        </div>
                     </div>
                 </div>
                 </div>
