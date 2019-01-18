@@ -14,7 +14,7 @@ $(document).ready(function () {
             success:function(data){
 
                 if(data == "vous avez déja voté"){
-                    alert(data);
+                    alert("Vous aimez déjà.");
                 }else{
                     data = JSON.parse(data);
                     $("#vote"+data['id']).html("J'aime ("+ data['jaime'] +")");
