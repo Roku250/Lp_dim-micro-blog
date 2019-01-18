@@ -42,26 +42,29 @@
                             </div>
                         </form>
                     </div>
-                    <div class="row"></br></br> </br></br> </br></br>
+                    <div class="row">
                         <?php 
                             include("includes/connexion.inc.php");
                             $query="SELECT * FROM messages";
                             $stmt=$pdo->query($query);
-                            
-                            
 
                             while($data=$stmt->fetch()){  
-                            
-                            
-                                echo "<blockquote>".$data['contenu']."</blockquote>
-                                <a href='index.php?id=".$data['id']."'>  <button name='d' type='submit' class='btn btn-secondary'>Modifier</button> </a> 
-                                <a href='includes\supprimer.php?id=".$data['id']."'> <button name='dd' type='submit' class='btn btn-secondary'>supression</button></a>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp
-                                <a href='#' data-value=".$data['jaime']." class='btn_vote jaime' id=".$data['id']."><span id=\"vote".$data['id']."\">J'aime (".$data['jaime'].")</a><br>";
-                                echo gmdate("Y-m-d H:i:s", $data['date']);
-
-                            }
                         ?>
+                            
+                                <blockquote><?php echo $data['contenu']; ?></blockquote>
+                                <a href='index.php?id=<?php echo $data['id']; ?>'>
+                                    <button name='d' type='submit' class='btn btn-secondary'>Modifier</button>
+                                </a> 
+                                <a href=' <?php echo "includes\supprimer.php?id=".$data['id'];?>'> 
+                                    <button name='dd' type='submit' class='btn btn-secondary'>supression</button>
+                                </a>
+                                <a href='#' data-value='<?php echo $data['jaime']; ?>' class='btn-secondary btn jaime' id='<?php echo $data['id'];?>'>
+                                    <span id="vote<?php echo $data['id']?>" >J'aime <?php echo "(".$data['jaime'].")"; ?>
+                                </a><br>
+                              
+                        <?php  echo gmdate("Y-m-d H:i:s", $data['date']);?><br><br><?php
+                            }
+                        ?> 
                     </div>
                 </div>
                 </div>
